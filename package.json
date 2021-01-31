@@ -1,0 +1,27 @@
+{
+  "name": "svgs-to-pdf",
+  "version": "0.0.1",
+  "description": "Merge multiple svg files to a single pdf document",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "npm run build",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "build": "docker build -t svgs-to-pdf ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gaggle/svgs-to-pdf.git"
+  },
+  "author": "Jon Lauridsen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gaggle/svgs-to-pdf/issues"
+  },
+  "homepage": "https://github.com/gaggle/svgs-to-pdf#readme",
+  "devDependencies": {
+    "jest": "^26.6.3",
+    "shellac": "^0.4.0",
+    "tmp-promise": "^3.0.2"
+  },
+  "type": "module"
+}
