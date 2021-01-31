@@ -46,6 +46,7 @@ describe("svgs-to-pdf docker image", function () {
         `).rejects.toEqual(expect.objectContaining({ retCode: 1 }))
       })
 
+      // TODO: Waiting for https://github.com/geelen/shellac/issues/4
       it.skip("should fail and show help", async () => {
         await expect(shellac.default.in(dir.path)`
           $ ${runCmd} ${arg}
@@ -59,6 +60,7 @@ describe("svgs-to-pdf docker image", function () {
     "with missing files to merge": { arg: "-o merged.pdf", expectedMsg: "missing files to merge" },
   })) {
     describe(key, () => {
+      // TODO: Waiting for https://github.com/geelen/shellac/issues/4 for a way to inspect stderr
       it(`should fail and mention '${expectedMsg}'`, async () => {
         await expect(shellac.default.in(dir.path)`
         $ ${runCmd} ${arg}
