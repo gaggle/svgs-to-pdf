@@ -20,7 +20,7 @@
   "homepage": "https://github.com/gaggle/svgs-to-pdf#readme",
   "devDependencies": {
     "jest": "^26.6.3",
-    "shellac": "^0.4.0",
+    "shellac": "^0.4.1",
     "tmp-promise": "^3.0.2"
   },
   "type": "module"
