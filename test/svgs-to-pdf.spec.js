@@ -29,9 +29,10 @@ describe("svgs-to-pdf docker image", function () {
     "-h",
   ]) {
     it(`should show help when called with ${arg}`, async () => {
-      await expect(shellac.default.in(dir.path)`
+      shellac.default.in(dir.path)`
         $ ${runCmd} ${arg}
-      `).resolves.toEqual(expect.objectContaining({ stdout: expectedUsageText }))
+        stdout >> ${(echo) => expect(echo).toEqual(expectedUsageText)}
+      `
     })
   }
 
@@ -40,39 +41,40 @@ describe("svgs-to-pdf docker image", function () {
     "without arguments": "",
   })) {
     describe(key, () => {
-      it("should fail and exit 1", async () => {
-        await expect(shellac.default.in(dir.path)`
-          $ ${runCmd} ${arg}
-        `).rejects.toEqual(expect.objectContaining({ retCode: 1 }))
-      })
-
-      // TODO: Waiting for https://github.com/geelen/shellac/issues/4
-      it.skip("should fail and show help", async () => {
-        await expect(shellac.default.in(dir.path)`
-          $ ${runCmd} ${arg}
-        `).rejects.toEqual(expect.objectContaining({ stderr: expectedUsageText }))
+      it("should exit 1 and print help to stderr", async () => {
+        await shellac.default.in(dir.path)`
+          exits(1) {
+            $ ${runCmd} ${arg}
+          }
+          exitcode >> ${code => expect(code).toBe(1)}
+          stderr >> ${stderr => expect(stderr).toEqual(expect.stringContaining(expectedUsageText))}
+        `
       })
     })
   }
 
   for (const [key, { arg, expectedMsg }] of Object.entries({
-    "with missing output": { arg: "*.svg", expectedMsg: "missing output" },
-    "with missing files to merge": { arg: "-o merged.pdf", expectedMsg: "missing files to merge" },
+    "with missing 'output' option": { arg: "*.svg", expectedMsg: "missing --output" },
+    "with missing files to merge argument": { arg: "-o merged.pdf", expectedMsg: "missing files to merge" },
   })) {
     describe(key, () => {
-      // TODO: Waiting for https://github.com/geelen/shellac/issues/4 for a way to inspect stderr
       it(`should fail and mention '${expectedMsg}'`, async () => {
-        await expect(shellac.default.in(dir.path)`
-        $ ${runCmd} ${arg}
-      `).rejects.toEqual(expect.objectContaining({ retCode: 1 }))
+        await shellac.default.in(dir.path)`
+          exits(1) {
+            $ ${runCmd} ${arg}
+          }
+          exitcode >> ${code => expect(code).toBe(1)}
+          stderr >> ${stderr => expect(stderr).toEqual(expect.stringContaining(expectedMsg))}
+        `
       })
     })
   }
 
   it("should merge svg file pattern to the specified pdf", async () => {
-    await expect(shellac.default.in(dir.path)`
-    $ ${runCmd} -o merged.pdf *.svg
-    $ du -h *.pdf
-  `).resolves.toEqual(expect.objectContaining({ stdout: "4.0K\tmerged.pdf" }))
+    await shellac.default.in(dir.path)`
+      $ ${runCmd} -o merged.pdf *.svg
+      $ du -h *.pdf
+      stdout >> ${stdout => expect(stdout).toEqual("4.0K\tmerged.pdf")}
+    `
   })
 })
